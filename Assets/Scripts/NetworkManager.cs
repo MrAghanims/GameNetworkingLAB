@@ -14,12 +14,17 @@ public class NetworkManager :
     public NetworkRunner runner;
 
     public NetworkPrefabRef playerPrefab;
+    public NetworkPrefabRef gameManagerPrefab;
 
     public TMP_Text roomInfoText;
     public TMP_Text playerListText;
     public static string LocalPlayerName;
     async void Start()
     {
+        if (runner.IsServer)
+        {
+            CollectibleSpawner.Instance.SpawnCollectible();
+        }
         runner = GetComponent<NetworkRunner>();
 
         runner.ProvideInput = true;
@@ -73,10 +78,17 @@ public class NetworkManager :
     {
         if (runner.IsServer)
         {
+            if (FindObjectOfType<GameManager>() == null)
+            {
+                runner.Spawn(
+                    gameManagerPrefab,
+                    Vector3.zero,
+                    Quaternion.identity);
+            }
             Vector3 spawnPos =
                 new Vector3(
                     Random.Range(-5, 5),
-                    1,
+                    0.1f,
                     Random.Range(-5, 5));
 
             NetworkObject obj =
@@ -91,10 +103,30 @@ public class NetworkManager :
         }
     }
 
-    public void OnInput(
-        NetworkRunner runner,
-        NetworkInput input)
+    public void OnInput(NetworkRunner runner, NetworkInput input)
     {
+        Camera cam = Camera.main;
+
+        Vector3 forward = cam.transform.forward;
+        Vector3 right = cam.transform.right;
+
+        forward.y = 0;
+        right.y = 0;
+
+        forward.Normalize();
+        right.Normalize();
+
+        NetworkInputData data = new NetworkInputData();
+
+        data.Move = new Vector2(
+            Input.GetAxisRaw("Horizontal"),
+            Input.GetAxisRaw("Vertical")
+        );
+
+        data.CamForward = forward;
+        data.CamRight = right;
+
+        input.Set(data);
     }
 
     public void OnPlayerLeft(

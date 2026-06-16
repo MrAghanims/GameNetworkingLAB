@@ -18,8 +18,8 @@ public class ScoreboardUI : MonoBehaviour
         {
             board +=
                 p.PlayerName +
-                " | " +
-                (p.IsReady ? "READY" : "NOT READY") +
+                " | HP: " +
+                p.HP +
                 " | Score: " +
                 p.Score +
                 "\n";

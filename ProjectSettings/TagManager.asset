@@ -6,11 +6,12 @@ TagManager:
   tags:
   - ReadyZone
   - Collectible
+  - DamageZone
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
   - 
